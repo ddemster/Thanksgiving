@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanksgiving Poll</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h2 { margin-top: 20px; }
+        .item { display: flex; align-items: center; margin-bottom: 5px; }
+        .vote-btn { background: none; border: none; cursor: pointer; font-size: 1.2em; margin-left: 10px; }
+        .vote-count { margin-left: 5px; }
+    </style>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+</head>
+<body>
+    <h1>Thanksgiving Dish Poll</h1>
+    <p>Click the thumbs up to upvote your favorites!</p>
+
+    <h2>🦃 Main Dishes</h2>
+    <div class="item">Roast turkey <button class="vote-btn" data-key="main-roast-turkey">👍</button><span class="vote-count" id="votes-main-roast-turkey">0</span></div>
+    <div class="item">Smoked turkey <button class="vote-btn" data-key="main-smoked-turkey">👍</button><span class="vote-count" id="votes-main-smoked-turkey">0</span></div>
+    <div class="item">Honey-glazed ham <button class="vote-btn" data-key="main-honey-glazed-ham">👍</button><span class="vote-count" id="votes-main-honey-glazed-ham">0</span></div>
+    <div class="item">Prime rib <button class="vote-btn" data-key="main-prime-rib">👍</button><span class="vote-count" id="votes-main-prime-rib">0</span></div>
+    <div class="item">Roast chicken <button class="vote-btn" data-key="main-roast-chicken">👍</button><span class="vote-count" id="votes-main-roast-chicken">0</span></div>
+    <div class="item">Vegetarian stuffed squash <button class="vote-btn" data-key="main-vegetarian-stuffed-squash">👍</button><span class="vote-count" id="votes-main-vegetarian-stuffed-squash">0</span></div>
+    <div class="item">Salmon or trout <button class="vote-btn" data-key="main-salmon-or-trout">👍</button><span class="vote-count" id="votes-main-salmon-or-trout">0</span></div>
+
+    <h2>🥗 Sides</h2>
+    <div class="item">Classic bread stuffing <button class="vote-btn" data-key="sides-classic-bread-stuffing">👍</button><span class="vote-count" id="votes-sides-classic-bread-stuffing">0</span></div>
+    <div class="item">Cornbread stuffing <button class="vote-btn" data-key="sides-cornbread-stuffing">👍</button><span class="vote-count" id="votes-sides-cornbread-stuffing">0</span></div>
+    <div class="item">Mashed potatoes <button class="vote-btn" data-key="sides-mashed-potatoes">👍</button><span class="vote-count" id="votes-sides-mashed-potatoes">0</span></div>
+    <div class="item">Garlic roasted potatoes <button class="vote-btn" data-key="sides-garlic-roasted-potatoes">👍</button><span class="vote-count" id="votes-sides-garlic-roasted-potatoes">0</span></div>
+    <div class="item">Sweet potato casserole (marshmallows or pecans) <button class="vote-btn" data-key="sides-sweet-potato-casserole">👍</button><span class="vote-count" id="votes-sides-sweet-potato-casserole">0</span></div>
+    <div class="item">Green bean casserole <button class="vote-btn" data-key="sides-green-bean-casserole">👍</button><span class="vote-count" id="votes-sides-green-bean-casserole">0</span></div>
+    <div class="item">Roasted Brussels sprouts <button class="vote-btn" data-key="sides-roasted-brussels-sprouts">👍</button><span class="vote-count" id="votes-sides-roasted-brussels-sprouts">0</span></div>
+    <div class="item">Glazed carrots <button class="vote-btn" data-key="sides-glazed-carrots">👍</button><span class="vote-count" id="votes-sides-glazed-carrots">0</span></div>
+    <div class="item">Creamed spinach <button class="vote-btn" data-key="sides-creamed-spinach">👍</button><span class="vote-count" id="votes-sides-creamed-spinach">0</span></div>
+    <div class="item">Macaroni and cheese <button class="vote-btn" data-key="sides-macaroni-and-cheese">👍</button><span class="vote-count" id="votes-sides-macaroni-and-cheese">0</span></div>
+    <div class="item">Corn pudding <button class="vote-btn" data-key="sides-corn-pudding">👍</button><span class="vote-count" id="votes-sides-corn-pudding">0</span></div>
+    <div class="item">Wild rice pilaf <button class="vote-btn" data-key="sides-wild-rice-pilaf">👍</button><span class="vote-count" id="votes-sides-wild-rice-pilaf">0</span></div>
+    <div class="item">Cranberry sauce (jellied or whole berry) <button class="vote-btn" data-key="sides-cranberry-sauce">👍</button><span class="vote-count" id="votes-sides-cranberry-sauce">0</span></div>
+    <div class="item">Dinner rolls or cornbread <button class="vote-btn" data-key="sides-dinner-rolls-or-cornbread">👍</button><span class="vote-count" id="votes-sides-dinner-rolls-or-cornbread">0</span></div>
+
+    <h2>🥗 Salads & Starters</h2>
+    <div class="item">Deviled eggs <button class="vote-btn" data-key="salads-deviled-eggs">👍</button><span class="vote-count" id="votes-salads-deviled-eggs">0</span></div>
+    <div class="item">Shrimp cocktail <button class="vote-btn" data-key="salads-shrimp-cocktail">👍</button><span class="vote-count" id="votes-salads-shrimp-cocktail">0</span></div>
+    <div class="item">Waldorf salad <button class="vote-btn" data-key="salads-waldorf-salad">👍</button><span class="vote-count" id="votes-salads-waldorf-salad">0</span></div>
+    <div class="item">Spinach salad with cranberries and pecans <button class="vote-btn" data-key="salads-spinach-salad">👍</button><span class="vote-count" id="votes-salads-spinach-salad">0</span></div>
+    <div class="item">Butternut squash soup <button class="vote-btn" data-key="salads-butternut-squash-soup">👍</button><span class="vote-count" id="votes-salads-butternut-squash-soup">0</span></div>
+    <div class="item">Pumpkin soup <button class="vote-btn" data-key="salads-pumpkin-soup">👍</button><span class="vote-count" id="votes-salads-pumpkin-soup">0</span></div>
+
+    <h2>🍰 Desserts</h2>
+    <div class="item">Pumpkin pie <button class="vote-btn" data-key="desserts-pumpkin-pie">👍</button><span class="vote-count" id="votes-desserts-pumpkin-pie">0</span></div>
+    <div class="item">Pecan pie <button class="vote-btn" data-key="desserts-pecan-pie">👍</button><span class="vote-count" id="votes-desserts-pecan-pie">0</span></div>
+    <div class="item">Apple pie <button class="vote-btn" data-key="desserts-apple-pie">👍</button><span class="vote-count" id="votes-desserts-apple-pie">0</span></div>
+    <div class="item">Sweet potato pie <button class="vote-btn" data-key="desserts-sweet-potato-pie">👍</button><span class="vote-count" id="votes-desserts-sweet-potato-pie">0</span></div>
+    <div class="item">Cherry pie <button class="vote-btn" data-key="desserts-cherry-pie">👍</button><span class="vote-count" id="votes-desserts-cherry-pie">0</span></div>
+    <div class="item">Chocolate cream pie <button class="vote-btn" data-key="desserts-chocolate-cream-pie">👍</button><span class="vote-count" id="votes-desserts-chocolate-cream-pie">0</span></div>
+    <div class="item">Cheesecake <button class="vote-btn" data-key="desserts-cheesecake">👍</button><span class="vote-count" id="votes-desserts-cheesecake">0</span></div>
+    <div class="item">Bread pudding <button class="vote-btn" data-key="desserts-bread-pudding">👍</button><span class="vote-count" id="votes-desserts-bread-pudding">0</span></div>
+    <div class="item">Pumpkin roll <button class="vote-btn" data-key="desserts-pumpkin-roll">👍</button><span class="vote-count" id="votes-desserts-pumpkin-roll">0</span></div>
+    <div class="item">Cookies (gingerbread, sugar, or chocolate chip) <button class="vote-btn" data-key="desserts-cookies">👍</button><span class="vote-count" id="votes-desserts-cookies">0</span></div>
+
+    <h2>🍹 Drinks</h2>
+    <div class="item">Apple cider (hot or cold) <button class="vote-btn" data-key="drinks-apple-cider">👍</button><span class="vote-count" id="votes-drinks-apple-cider">0</span></div>
+    <div class="item">Mulled wine <button class="vote-btn" data-key="drinks-mulled-wine">👍</button><span class="vote-count" id="votes-drinks-mulled-wine">0</span></div>
+    <div class="item">Eggnog <button class="vote-btn" data-key="drinks-eggnog">👍</button><span class="vote-count" id="votes-drinks-eggnog">0</span></div>
+    <div class="item">Sparkling water with cranberries <button class="vote-btn" data-key="drinks-sparkling-water">👍</button><span class="vote-count" id="votes-drinks-sparkling-water">0</span></div>
+    <div class="item">Coffee and tea <button class="vote-btn" data-key="drinks-coffee-and-tea">👍</button><span class="vote-count" id="votes-drinks-coffee-and-tea">0</span></div>
+
+    <script>
+        // TODO: Replace with your Firebase config
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const votesRef = db.ref('votes');
+
+        // Load initial votes
+        votesRef.on('value', (snapshot) => {
+            const votes = snapshot.val() || {};
+            document.querySelectorAll('.vote-count').forEach(span => {
+                const key = span.id.replace('votes-', '');
+                span.textContent = votes[key] || 0;
+            });
+        });
+
+        // Handle vote clicks
+        document.querySelectorAll('.vote-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const key = btn.dataset.key;
+                votesRef.child(key).transaction(current => (current || 0) + 1);
+            });
+        });
+    </script>
+</body>
+</html>
